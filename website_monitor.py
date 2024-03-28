@@ -47,4 +47,4 @@ def monitor_website(url, element_class, saved_content_file):
         print("Element with class '{}' not found.".format(element_class))
 
 # Example usage
-monitor_website("https://resonant-belekoy-8b91c4.netlify.app/", "performanceevents", "default_content.txt")
+monitor_website("http://ft.org.ua/ua/performance/konotopska-vidma", "performanceevents", "default_content.txt")
