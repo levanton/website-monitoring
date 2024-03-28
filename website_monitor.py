@@ -50,4 +50,4 @@ def monitor_website(url, element_class, saved_content_file):
         time.sleep(60)
 
 # Example usage
-monitor_website("https://serene-sunburst-efee40.netlify.app/", "performanceevents", "default_content.txt")
+monitor_website("http://ft.org.ua/ua/performance/konotopska-vidma", "performanceevents", "default_content.txt")
