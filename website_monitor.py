@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 import smtplib
 import requests
 from bs4 import BeautifulSoup
 import time
-import io  # Импортируем модуль io для совместимости с Python 2
+import io 
 import os
-
 
 def send_email(subject, message):
     # Email settings
@@ -16,14 +13,8 @@ def send_email(subject, message):
     smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
 
-    # Ensure subject and message are unicode
-    if not isinstance(subject, unicode):
-        subject = unicode(subject, 'utf-8')
-    if not isinstance(message, unicode):
-        message = unicode(message, 'utf-8')
-
     # Email content
-    msg = u"Subject: {}\n\n{}".format(subject, message).encode('utf-8')
+    msg = "Subject: {}\n\n{}".format(subject, message)
 
     # Sending the email
     server = smtplib.SMTP(smtp_server, port)
@@ -48,7 +39,7 @@ def monitor_website(url, element_class, saved_content_file):
             if current_content != initial_content:
                 print("Change detected! Sending email.")
                 send_email("Website Change Detected", "The content of the element with class '{}' has changed.".format(element_class))
-                # Обновляем initial_content для последующих проверок
+                # Update initial_content for subsequent checks
                 initial_content = current_content
             else:
                 print("No change.")

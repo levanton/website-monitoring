@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import smtplib
 
 def send_email(subject, message):
