@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
+from unidecode import unidecode
 
 def send_email(subject, message):
     # Email settings
@@ -12,7 +13,7 @@ def send_email(subject, message):
     port = 587  # For starttls
 
     # Email content
-    msg = f"Subject: {subject}\n\n{message}"
+    msg = "Subject: {}\n\n{}".format(subject, message)
 
     # Sending the email
     with smtplib.SMTP(smtp_server, port) as server:
@@ -20,12 +21,12 @@ def send_email(subject, message):
         server.starttls()
         server.ehlo()
         server.login(sender, password)
-        server.sendmail(sender, receiver, msg)
+        server.sendmail(sender, receiver, unidecode(msg))
         server.quit()
 
 def check_website():
-    url = "https://example.com"
-    element_selector = "div.some-class"  # Change this to the CSS selector of the element you want to monitor
+    url = "http://ft.org.ua/ua/performance/konotopska-vidma"
+    element_selector = "div.performanceevents"  # Change this to the CSS selector of the element you want to monitor
 
     # Fetching the website content
     response = requests.get(url)
@@ -36,7 +37,7 @@ def check_website():
         current_content = element.text.strip()
         if current_content != previous_content[0]:
             previous_content[0] = current_content
-            send_email("Website Change Detected", f"The content has changed: {current_content}")
+            send_email("Website Change Detected", "The content has changed: {}".format(current_content))
     else:
         print("Element not found")
 
