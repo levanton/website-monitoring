@@ -1,48 +1,63 @@
+# -*- coding: utf-8 -*-
+
+import smtplib
 import requests
 from bs4 import BeautifulSoup
-import smtplib
 import time
-from unidecode import unidecode
+import io  # Импортируем модуль io для совместимости с Python 2
+import os
+
 
 def send_email(subject, message):
     # Email settings
-    sender = "smtp.gmail.com"
-    receiver = "levanton21@gmail.com"
-    password = "${{ secrets.GMAIL_PASSWORD }}"
+    sender = os.environ.get('EMAIL_USER')
+    receiver = os.environ.get('EMAIL_RECEIVER')
+    password = os.environ.get('EMAIL_PASSWORD')
     smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
 
+    # Ensure subject and message are unicode
+    if not isinstance(subject, unicode):
+        subject = unicode(subject, 'utf-8')
+    if not isinstance(message, unicode):
+        message = unicode(message, 'utf-8')
+
     # Email content
-    msg = "Subject: {}\n\n{}".format(subject, message)
+    msg = u"Subject: {}\n\n{}".format(subject, message).encode('utf-8')
 
     # Sending the email
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(sender, password)
-        server.sendmail(sender, receiver, unidecode(msg))
-        server.quit()
+    server = smtplib.SMTP(smtp_server, port)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(sender, password)
+    server.sendmail(sender, receiver, msg)
+    server.quit()
 
-def check_website():
-    url = "http://ft.org.ua/ua/performance/konotopska-vidma"
-    element_selector = "div.performanceevents"  # Change this to the CSS selector of the element you want to monitor
+def monitor_website(url, element_class, saved_content_file):
+    with io.open(saved_content_file, 'r', encoding='utf-8') as file:
+        initial_content = file.read().strip()
 
-    # Fetching the website content
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    element = soup.select_one(element_selector)
-
-    if element:
-        current_content = element.text.strip()
-        if current_content != previous_content[0]:
-            previous_content[0] = current_content
-            send_email("Website Change Detected", "The content has changed: {}".format(current_content))
-    else:
-        print("Element not found")
-
-if __name__ == "__main__":
-    previous_content = [""]
     while True:
-        check_website()
-        time.sleep(300)  # Check every 5 minutes
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        element = soup.find(class_=element_class)
+
+        if element:
+            current_content = element.text.strip()
+            if current_content != initial_content:
+                print("Change detected! Sending email.")
+                send_email("Website Change Detected", "The content of the element with class '{}' has changed.".format(element_class))
+                # Обновляем initial_content для последующих проверок
+                initial_content = current_content
+            else:
+                print("No change.")
+                send_email("Website No Change Detected", "Then no '{}' has changed.".format(element_class))
+        else:
+            print("Element with class '{}' not found.".format(element_class))
+
+        # Check every 5 minutes (300 seconds)
+        time.sleep(60)
+
+# Example usage
+monitor_website("http://ft.org.ua/ua/performance/konotopska-vidma", "performanceevents", "default_content.txt")
