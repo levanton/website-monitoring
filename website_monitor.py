@@ -43,7 +43,6 @@ def monitor_website(url, element_class, saved_content_file):
                 initial_content = current_content
             else:
                 print("No change.")
-                send_email("Website No Change Detected", "Then no '{}' has changed.".format(element_class))
         else:
             print("Element with class '{}' not found.".format(element_class))
 
