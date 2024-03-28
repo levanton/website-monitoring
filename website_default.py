@@ -18,4 +18,4 @@ def save_current_version(url, element_class, output_file):
         print("Element with class '{}' not found.".format(element_class))
 
 # Пример использования
-save_current_version("http://ft.org.ua/ua/performance/konotopska-vidma", "performanceevents", "default_content.txt")
+save_current_version("https://resonant-belekoy-8b91c4.netlify.app/", "performanceevents", "default_content.txt")
