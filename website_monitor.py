@@ -6,10 +6,10 @@ from unidecode import unidecode
 
 def send_email(subject, message):
     # Email settings
-    sender = "your_email@example.com"
-    receiver = "receiver_email@example.com"
-    password = "your_password"
-    smtp_server = "smtp.example.com"
+    sender = "smtp.gmail.com"
+    receiver = "levanton21@gmail.com"
+    password = "${{ secrets.GMAIL_PASSWORD }}"
+    smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
 
     # Email content

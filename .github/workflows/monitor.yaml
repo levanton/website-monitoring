@@ -26,4 +26,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run the script
+        env:
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
         run: python website_monitor.py
