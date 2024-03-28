@@ -1,6 +1,9 @@
 name: Website Monitoring
 
 on:
+  push:
+    branches:
+      - main  # Run on push to the main branch
   schedule:
     - cron: '*/1 * * * *'  # Run every 5 minutes
 
