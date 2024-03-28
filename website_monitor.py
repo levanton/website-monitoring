@@ -29,25 +29,22 @@ def monitor_website(url, element_class, saved_content_file):
     with io.open(saved_content_file, 'r', encoding='utf-8') as file:
         initial_content = file.read().strip()
 
-    while True:
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        element = soup.find(class_=element_class)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    element = soup.find(class_=element_class)
 
-        if element:
-            current_content = element.text.strip()
-            if current_content != initial_content:
-                print("Change detected! Sending email.")
-                send_email("Website Change Detected", "The content of the element with class '{}' has changed.".format(element_class))
-                # Update initial_content for subsequent checks
-                initial_content = current_content
-            else:
-                print("No change.")
+    if element:
+        current_content = element.text.strip()
+        if current_content != initial_content:
+            print("Change detected! Sending email.")
+            send_email("Website Change Detected", "The content of the element with class '{}' has changed.".format(element_class))
+            # Update initial_content for subsequent checks
+            with io.open(saved_content_file, 'w', encoding='utf-8') as file:
+                file.write(current_content)
         else:
-            print("Element with class '{}' not found.".format(element_class))
-
-        # Check every 5 minutes (300 seconds)
-        time.sleep(60)
+            print("No change.")
+    else:
+        print("Element with class '{}' not found.".format(element_class))
 
 # Example usage
 monitor_website("https://resonant-belekoy-8b91c4.netlify.app/", "performanceevents", "default_content.txt")
